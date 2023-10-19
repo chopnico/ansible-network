@@ -1,0 +1,30 @@
+---
+- name: meraki - ssid
+  delegate_to: localhost
+  cisco.meraki.meraki_ssid:
+    auth_key: "{{ meraki_api_key }}"
+    org_id: "{{ meraki_organization_id }}"
+    net_name: "{{ inventory_hostname }}"
+    state: "{{ item.state }}"
+    number: "{{ item.number }}"
+    name: "{{ item.name }}"
+    enabled: "{{ item.enabled }}"
+    auth_mode: "{{ item.auth_mode }}"
+    encryption_mode: "{{ item.encryption_mode}}"
+    wpa_encryption_mode: "{{ item.wpa_encryption_mode | default('WPA2 only')}}"
+    radius_servers: "{{ item.radius_servers }}"
+    radius_coa_enabled: "{{ item.radius_coa_enabled }}"
+    radius_accounting_enabled: "{{ item.radius_accounting_enabled }}"
+    radius_accounting_servers: "{{ item.radius_accounting_servers }}"
+    ip_assignment_mode: "{{ item.ip_assignment_mode }}"
+    use_vlan_tagging: "{{ item.use_vlan_tagging }}"
+    default_vlan_id: "{{ item.default_vlan_id }}"
+    walled_garden_enabled: "{{ item.walled_garden_enabled }}"
+    walled_garden_ranges: "{{ item.walled_garden_ranges }}"
+    band_selection: "{{ item.band_selection | default('Dual band operation with Band Steering') }}"
+    use_proxy: "{{ use_proxy | default(omit)}}"
+    validate_certs: "{{ validate_certs | default(omit) }}"
+    splash_page: "{{ item.splash_page | default('None') }}"
+  with_items: "{{ ssids }}"
+  when: ssids is defined
+...

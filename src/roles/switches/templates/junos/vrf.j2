@@ -1,0 +1,5 @@
+{% if item.state == "present" %}
+  set routing-instances {{ item.name }} instance-type virtual-router
+{% elif item.state == "absent" %}
+  delete routing-instances {{ item.name }}
+{% endif %}

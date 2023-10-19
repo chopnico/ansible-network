@@ -1,0 +1,48 @@
+! templates/link_aggregation.j2
+#jinja2: trim_blocks: False
+#jinja2: lstrip_blocks: False
+
+{% if item.state == "enabled" %}
+
+interface Port-Channel{{ item.id }}
+
+  {% if item.description is defined %}
+
+   description {{ item.description }}
+
+  {% endif %}
+  
+   mtu {{ item.mtu | default("9214") }}
+
+  {% if item.switchport == "trunk" %}
+
+   switchport mode trunk
+
+  {% elif item.switchport == "access" %}
+
+   switchport mode access
+
+  {% elif item.switchport == false %}
+
+   no switchport
+
+    {% if item.vrf is defined %}
+
+   vrf forwarding {{ item.vrf }}
+
+    {% endif %}
+
+   ip address {{ item.ip_address }}
+
+  {% endif %}
+  {% if item.mlag is defined %}
+    
+   mlag {{ item.mlag }}
+
+  {% endif %}
+{% elif item.state == "removed" %}
+
+default interface Port-Channel{{ item.id }}
+no interface Port-Channel{{ item.id }}
+
+{% endif %}

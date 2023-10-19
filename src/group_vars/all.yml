@@ -1,0 +1,45 @@
+spanning_tree_mode: rapid-pvst
+
+default_internal_dns:
+  - 1.1.1.1
+  - 1.1.1.1
+
+snmp:
+  - server: 1.1.1.1
+    access: 'ro'
+    vrf: management
+    community: community
+    udp_port: 162
+    state: present
+  
+ntp: 
+  - server: 1.1.1.1
+    vrf: management
+    state: present
+
+logging:
+  - server: 1.1.1.1
+    vrf: management
+    port: 514
+    protocol: udp
+    level: 5
+    state: present
+
+aaa:
+  - radius_server: 1.1.1.1
+    radius_server_group: clearpass
+    vrf: management
+    authorization_port: 1812
+    accounting_port: 1813
+    state: present
+
+users:
+  - name: wkey
+    state: present
+    privilege: 15
+    role: network-admin
+    ssh_key: ""
+
+vrfs:
+  - name: management
+    state: present

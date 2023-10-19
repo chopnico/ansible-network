@@ -1,0 +1,46 @@
+---
+- name: junos - users
+  block:
+    - name: junos - configure spanning tree
+      junipernetworks.junos.junos_config:
+        update: "merge"
+        src: "junos/stp.j2"
+        src_format: "set"
+      when: spanning_tree_mode is defined
+  when: ansible_network_os == 'junipernetworks.junos.junos'
+
+- name: eos - stp
+  block:
+    - name: eos - get config
+      arista.eos.eos_command:
+        commands: 'show running-config all | exclude \.\*'
+      register: output
+      no_log: "{{ no_log | default(false) }}"
+      when: _eos_config is not defined
+
+    - name: eos - save config as fact
+      set_fact:
+        _eos_config: "{{ output.stdout[0] }}"
+      no_log: "{{ no_log | default(true) }}"
+      when: _eos_config is not defined
+
+    - name: eos - configure spanning tree
+      arista.eos.eos_config:
+        src: arista/stp.j2
+        defaults: yes
+        save_when: changed
+        config: "{{ _eos_config | default(omit) }}"
+      when: spanning_tree_mode is defined
+  when: ansible_network_os == 'arista.eos.eos'
+
+- name: nxos - spanning tree
+  block:
+    - name: nxos - configure spanning tree
+      cisco.nxos.nxos_config:
+        src: cisco/stp.j2
+        diff_against: running
+        save_when: changed
+        defaults: true
+      when: spanning_tree_mode is defined
+  when: ansible_network_os == 'cisco.nxos.nxos'
+...

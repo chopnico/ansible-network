@@ -1,0 +1,9 @@
+{% if item.state == "present" %}
+  {% if item.vrf is defined %}
+logging server {{ item.server }} {{ item.level }} use-vrf {{ item.vrf }}
+  {% else %}
+logging server {{ item.server }}
+  {% endif %}
+{% elif item.state == "absent" %}
+no logging server {{ item.server }}
+{% endif %}

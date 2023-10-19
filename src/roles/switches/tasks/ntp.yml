@@ -1,0 +1,47 @@
+---
+- name: junos - ntp
+  block:
+    - name: configure ntp
+      junipernetworks.junos.junos_config:
+        update: "merge"
+        src: "junos/ntp.j2"
+        src_format: "set"
+      when: ntp is defined
+  when: ansible_network_os == 'junipernetworks.junos.junos'
+
+- name: eos - ntp
+  block:
+    - name: eos - get config
+      arista.eos.eos_command:
+        commands: 'show running-config all | exclude \.\*'
+      register: output
+      no_log: "{{ no_log | default(true) }}"
+      when: _eos_config is not defined
+
+    - name: eos - save config as fact
+      set_fact:
+        _eos_config: "{{ output.stdout[0] }}"
+      no_log: "{{ no_log | default(true) }}"
+      when: _eos_config is not defined
+
+    - name: eos - configure ntp
+      arista.eos.eos_config:
+        src: arista/ntp.j2
+        defaults: yes
+        save_when: changed
+        config: "{{ _eos_config | default(omit) }}"
+      with_items: "{{ ntp }}"
+      when: ntp is defined
+  when: ansible_network_os == 'arista.eos.eos'
+
+- name: nxos - ntp
+  block:
+    - name: nxos - configure ntp
+      cisco.nxos.nxos_config:
+        src: cisco/ntp.j2
+        diff_against: running
+        save_when: changed
+      with_items: "{{ ntp }}"
+      when: ntp is defined
+  when: ansible_network_os == 'cisco.nxos.nxos'
+...

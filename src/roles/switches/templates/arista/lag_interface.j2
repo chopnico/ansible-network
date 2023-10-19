@@ -1,0 +1,54 @@
+! templates/interface.j2
+#jinja2: trim_blocks: False
+#jinja2: lstrip_blocks: False
+
+{% if item.state == "enabled" %}
+  {% for member in item.members %}
+
+interface {{ member.name }}
+  
+    {% if item.description is defined %}
+   
+   description {{ member.description }}
+  
+    {% endif %}
+   
+   no shutdown
+
+    {% if member.speed is defined %}
+
+   speed {{ member.speed }}
+
+    {% endif %}
+
+   mtu {{ member.mtu | default("9214") }}
+
+    {% if item.switchport == "trunk" %}
+
+   switchport mode trunk
+
+    {% elif item.switchport == "access" %}
+
+   switchport mode access
+  
+    {% elif item.switchport == false %}
+   
+   no switchport
+
+      {% if item.vrf is defined %}
+
+   vrf forwarding {{ item.vrf }}
+
+      {% endif %}
+    {% endif %}
+    
+   channel-group {{ item.id }} mode {{ item.mode }}
+
+  {% endfor %}
+{% elif item.state == "removed" %}
+  {% for member in item.members %}
+
+default interface {{ member.name }}
+  
+  {% endfor %}
+{% endif %}

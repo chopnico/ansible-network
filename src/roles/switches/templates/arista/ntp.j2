@@ -1,0 +1,13 @@
+! templates/ntp.j2
+#jinja2: trim_blocks: False
+#jinja2: lstrip_blocks: False
+
+{% if item.state == "present" %}
+
+ntp server vrf {{ item.vrf | default("default")  }} {{ item.server }}
+
+{% elif item.state == "removed" %}
+
+no ntp server {{ item.vrf | default("default") }} {{ item.server }}
+
+{% endif %}

@@ -1,0 +1,7 @@
+vlans:
+  - state: present
+    aggregate:
+      - id: 1
+        name: default
+      - id: 10
+        name: SQL

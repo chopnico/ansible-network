@@ -1,0 +1,5 @@
+{% if item.state == "present" %}
+ntp server {{ item.server }} use-vrf {{ item.vrf | default("default") }}
+{% elif item.state == "removed" %}
+no ntp server {{ item.server }} use-vrf {{ item.vrf | default("default") }}
+{% endif %}

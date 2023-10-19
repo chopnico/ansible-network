@@ -1,0 +1,11 @@
+{% if item.role == "network-admin" %}
+
+set system login user {{ item.name }} class super-user
+set system login user {{ item.name }} authentication ssh-rsa "{{ item.ssh_key }}"
+
+{% elif item.role == "network-operator" %}
+
+set system login user {{ item.name }} class operator
+set system login user {{ item.name }} authentication ssh-rsa "{{ item.ssh_key }}"
+
+{% endif %}

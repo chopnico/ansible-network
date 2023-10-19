@@ -1,0 +1,10 @@
+---
+- include_tasks: "network.yml"
+
+- name: meraki
+  block:
+    - include_tasks: "device.yml"
+    - include_tasks: "vlan.yml"
+    - include_tasks: "ssid.yml"
+  when: state == "present"
+...

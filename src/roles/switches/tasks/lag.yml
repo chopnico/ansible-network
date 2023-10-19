@@ -1,0 +1,40 @@
+---
+- name: eos - lag
+  block:
+    - name: get eos config
+      arista.eos.eos_command:
+        commands: 'show running-config all | exclude \.\*'
+      register: output
+      no_log: "{{ no_log | default(true) }}"
+      when: _eos_config is not defined
+
+    - name: save eos config as fact
+      set_fact:
+        _eos_config: "{{ output.stdout[0] }}"
+      no_log: "{{ no_log | default(true) }}"
+      when: _eos_config is not defined
+
+    - name: build lags
+      arista.eos.eos_config:
+        src: arista/lag.j2
+        defaults: true
+        save_when: changed
+        config: "{{ _eos_config | default(omit) }}"
+      when: 
+        - lags is defined
+      with_items: "{{ lags }}"
+
+    - name: build lag members
+      arista.eos.eos_config:
+        after:
+          - shutdown
+          - no shutdown
+        src: arista/lag_interface.j2
+        defaults: true
+        save_when: changed
+        config: "{{ _eos_config | default(omit) }}"
+      when: 
+        - lags is defined
+      with_items: "{{ lags }}"
+  when: ansible_network_os == "arista.eos.eos"
+...

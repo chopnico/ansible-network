@@ -1,0 +1,9 @@
+---
+- hosts: api.cloudflare.com
+  gather_facts: no
+
+  roles:
+    - name: external_dns
+      tags: external_dns
+    - name: internal_dns
+      tags: internal_dns

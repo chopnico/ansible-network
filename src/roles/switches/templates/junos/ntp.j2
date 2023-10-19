@@ -1,0 +1,9 @@
+{% for server in ntp %}
+  {% if server.state == "present" or server.state == "enable" or server.state == "configure" %}
+  set system ntp server {{ server.server }}
+  {% elif server.state == "deactivate" or server.state == "disable" %}
+  deactivate system ntp server {{ server.server }}
+  {% elif server.state == "delete" or server.state == "remove" or server.state == "absent" %}
+  delete system ntp server {{ server.server }}
+  {% endif %}
+{% endfor %}

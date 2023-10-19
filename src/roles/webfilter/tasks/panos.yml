@@ -1,0 +1,35 @@
+---
+- name: get allowed list
+  include_vars: "../vars/allowed_urls.yml"
+- name: get blocked list
+  include_vars: "../vars/blocked_urls.yml"
+
+- name: apply allowed list
+  delegate_to: localhost
+  panos_custom_url_category:
+    api_key: "{{ panos_api_key }}"
+    state: present
+    hostname: "{{ inventory_hostname }}"
+    urls: "{{ allowed_urls }}"
+    name: "allowed-list"
+    description: "default allowed list"
+    ignore_cert_error: "{{ ignore_cert_error }}"
+
+- name: apply blocked list
+  delegate_to: localhost
+  panos_custom_url_category:
+    api_key: "{{ panos_api_key }}"
+    state: present
+    hostname: "{{ inventory_hostname }}"
+    urls: "{{ blocked_urls }}"
+    name: "blocked-list"
+    description: "default blocked list"
+    ignore_cert_error: "{{ ignore_cert_error }}"
+
+- name: commit changes
+  delegate_to: localhost
+  paloaltonetworks.panos.panos_commit:
+    provider:
+      api_key: "{{ panos_api_key }}"
+      ip_address: "{{ inventory_hostname }}"
+  when: panos_commit

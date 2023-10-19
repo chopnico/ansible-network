@@ -1,0 +1,5 @@
+---
+- include_tasks: meraki.yml
+  when: "'meraki' in group_names"
+- include_tasks: panos.yml
+  when: "'panos' in group_names"

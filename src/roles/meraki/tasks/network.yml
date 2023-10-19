@@ -1,0 +1,15 @@
+---
+- name: meraki - network
+  delegate_to: localhost
+  cisco.meraki.meraki_network:
+    auth_key: "{{ meraki_api_key }}"
+    org_id: "{{ meraki_organization_id }}"
+    net_name: "{{ inventory_hostname }}"
+    state: "{{ state }}"
+    type: "{{ network_type }}"
+    timezone: "{{ timezone | default('America/New_York')}}"
+    tags: "{{ tags | default(omit) }}"
+    enable_vlans: "{{ enable_vlans | default(yes) }}"
+    use_proxy: "{{ use_proxy | default(omit)}}"
+    validate_certs: "{{ validate_certs | default(omit) }}"
+...

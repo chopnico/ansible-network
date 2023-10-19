@@ -1,0 +1,4 @@
+allowed_urls:
+  - "www.google.com"
+  - "www.linux.org"
+  - "www.microsoft.com"

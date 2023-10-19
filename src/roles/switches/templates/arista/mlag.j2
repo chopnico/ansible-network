@@ -1,0 +1,18 @@
+! templates/mlag.j2
+#jinja2: trim_blocks: False
+#jinja2: lstrip_blocks: False
+
+{% if item.state == "enabled" %}
+
+mlag configuration
+   domain-id {{ item.domain_id }}
+   local-interface {{ item.local_interface }}
+   peer-address {{ item.peer_address }}
+   peer-link {{ item.peer_link }}
+   no shutdown
+
+{% elif item.state == "disabled" %}
+
+no mlag configuration
+
+{% endif %}

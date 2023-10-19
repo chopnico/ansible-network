@@ -1,0 +1,64 @@
+---
+ansible_connection: network_cli
+ansible_network_os: eos
+ansible_become: no
+radius_update_key: false
+
+users:
+  - name: network_admin
+    privilege: 15
+    role: network-admin
+    ssh_key: "{{ lookup('file', '{{ playbook_dir }}/public_keys/network_admin') }}"
+    state: present 
+
+ntp: 
+  - server: ntp.audiacloud.net
+    vrf: management
+    state: present
+
+stp:
+  - mode: rapid-pvst
+    state: present
+
+logging:
+  - server: logging.audiacloud.net
+    vrf: management
+    port: 514
+    protocol: udp
+    state: present
+  - server: 0.0.0.0
+    vrf: management
+    port: 514
+    protocol: udp
+    state: present
+
+aaa:
+  - radius_server: 0.0.0.0
+    radius_server_group: clearpass
+    vrf: management
+    authorization_port: 1812
+    accounting_port: 1813
+    state: present
+
+snmp:
+  - server: snmp.audiacloud.net
+    vrf: management
+    community: testcommunity
+    udp_port: 162
+    state: present
+
+vrfs:
+  - name: management
+    route_distinguisher: 0:0
+    state: present
+
+vlans:
+  - state: present
+    aggregate:
+      - { id: 1, name: default }
+
+lldp:
+  - management_address: Management1
+    reinit: 5
+    state: enabled 
+

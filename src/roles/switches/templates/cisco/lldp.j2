@@ -1,0 +1,5 @@
+{% if lldp.state == "present" %}
+feature lldp
+{% elif lldp.state == "absent" %}
+no feature lldp
+{% endif %}

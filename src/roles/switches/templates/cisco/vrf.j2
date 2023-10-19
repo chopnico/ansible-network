@@ -1,0 +1,8 @@
+{% if item.state == "present" %}
+vrf context {{ item.name }}
+  {% if item.name != "management" %}
+  description {{ item.description | default(item.name) }}
+  {% endif %}
+{% elif item.state == "absent" %}
+no vrf context {{ item.name }}
+{% endif %}

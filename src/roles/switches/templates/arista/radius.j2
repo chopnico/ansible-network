@@ -1,0 +1,19 @@
+! templates/radius.j2
+#jinja2: trim_blocks: False
+#jinja2: lstrip_blocks: False
+
+{% if radius_update_key == true %}
+
+radius-server key {{ radius_key }}
+
+{% endif %}
+
+{% if item.state == "present" %}
+
+radius-server host {{ item.radius_server }} vrf {{ item.vrf | default("default") }} auth-port {{ item.authorization_port }} acct-port {{ item.accounting_port }}
+
+{% elif item.state == "removed" or item.state == "delete" %}
+
+no radius-server host {{ item.radius_server }} vrf {{ item.vrf | default("default") }} 
+no radius-server key
+{% endif %}

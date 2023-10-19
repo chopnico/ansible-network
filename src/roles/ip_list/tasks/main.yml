@@ -1,0 +1,34 @@
+---
+- name: get meraki organization networks
+  include_tasks: "../../common/tasks/meraki_organization_networks.yml"
+  when: "'meraki' in group_names"
+
+- name: get allowed list
+  include_vars: "../vars/ip_list_block_url_feeds.yml"
+
+- name: ip lists from feeds - block
+  delegate_to: localhost
+  minemeld_feed:
+    url: "{{ item }}"
+    validate_certs: no
+  with_items: "{{ ip_list_block_url_feeds }}"
+  register: block_feeds
+  when: "'meraki' in group_names"
+
+- name: meraki - set ip block list
+  delegate_to: localhost
+  meraki_mx_l3_firewall:
+    auth_key: "{{ meraki_api_key }}"
+    org_id: "{{ meraki_organization_id }}"
+    net_name: "{{ item['name'] }}"
+    state: present
+    rules:
+      - comment: ip block list from minemeld
+        src_cidr: any
+        src_port: any
+        dest_cidr: "{{ block_feeds['results'][0]['data'] | join(',')}}"
+        dest_port: any
+        protocol: any
+        policy: deny
+  with_items: "{{ meraki_organization_networks }}" 
+  when: "'meraki' in group_names"

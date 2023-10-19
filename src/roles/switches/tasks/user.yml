@@ -1,0 +1,48 @@
+---
+- name: junos - users
+  block:
+    - name: junos - configure users
+      junipernetworks.junos.junos_config:
+        update: "merge"
+        src: "junos/user.j2"
+        src_format: "set"
+      with_items: "{{ users }}"
+      when: users is defined
+  when: ansible_network_os == 'junipernetworks.junos.junos'
+
+- name: eos - user
+  block:
+    - name: get eos config
+      arista.eos.eos_command:
+        commands: 'show running-config all | exclude \.\*'
+      register: output
+      no_log: "{{ no_log | default(true) }}"
+      when: _eos_config is not defined
+
+    - name: save eos config as fact
+      set_fact:
+        _eos_config: "{{ output.stdout[0] }}"
+      no_log: "{{ no_log | default(true) }}"
+      when: _eos_config is not defined
+
+    - name: configure user
+      arista.eos.eos_config:
+        src: arista/user.j2
+        defaults: yes
+        save_when: changed
+        config: "{{ _eos_config | default(omit) }}"
+      with_items: "{{ users }}"
+      when: users is defined
+  when: ansible_network_os == 'arista.eos.eos'
+
+- name: nxos - user
+  block:
+    - name: nxos - configure users
+      cisco.nxos.nxos_config:
+        src: cisco/user.j2
+        diff_against: running
+        save_when: changed
+      with_items: "{{ users }}"
+      when: users is defined
+  when: ansible_network_os == 'cisco.nxos.nxos'
+...

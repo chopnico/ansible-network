@@ -1,0 +1,8 @@
+---
+- hosts: meraki:panos_edge
+  gather_facts: no
+  roles:
+    - name: webfilter
+      tags: webfilter
+    - name: ip_list
+      tags: ip_list

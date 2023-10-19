@@ -1,0 +1,13 @@
+! templates/vrf.j2
+#jinja2: trim_blocks: False
+#jinja2: lstrip_blocks: False
+
+{% if item.state == "present" %}
+
+vrf definition {{ item.name }}
+
+{% elif item.state == "removed" %}
+
+no vrf definition {{ item.name }}
+
+{% endif %}

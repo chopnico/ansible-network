@@ -1,0 +1,24 @@
+! templates/logging.j2
+#jinja2: trim_blocks: False
+#jinja2: lstrip_blocks: False
+{% if item.state == "present" %}
+  {% if item.vrf is defined %}
+
+logging vrf {{ item.vrf }} host {{ item.server }} {{ item.port | default("514") }} protocol {{ item.protocol | default("udp") }}
+
+  {% else %}
+
+logging host {{ item.server }} {{ item.port | default("514") }} protocol {{ item.protocol | default("udp") }}
+
+  {% endif %}
+{% elif item.state == "removed" %}
+  {% if item.vrf is defined %}
+
+no logging vrf {{ item.vrf }} host {{ item.server }}
+
+  {% else %}
+
+no logging host {{ item.server }}
+
+  {% endif %}
+{% endif %}

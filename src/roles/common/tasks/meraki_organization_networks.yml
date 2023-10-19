@@ -1,0 +1,12 @@
+---
+- delegate_to: localhost
+  name: get meraki organization networks
+  meraki_organization_networks:
+    auth_key: "{{ meraki_api_key }}"
+    state: query
+    org_id: "{{ meraki_organization_id }}"
+    tag: "{{ ansible_deploy_environment }}"
+  register: meraki_organization_networks
+
+- set_fact:
+    meraki_organization_networks: "{{ meraki_organization_networks['data'] }}"

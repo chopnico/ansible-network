@@ -1,0 +1,5 @@
+{% if lldp.state == "present" %}
+  set protocols lldp interface {{ lldp.interface }}
+{% elif lldp.state == "absent" %}
+  delete protocols lldp
+{% endif %}

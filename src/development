@@ -1,0 +1,40 @@
+[eos_spines]
+DEV-EOS-01.audiacloud.net ansible_user=admin ansible_ssh_pass=admin
+
+[eos:children]
+eos_spines
+
+[nxos_cores]
+DEV-NXOS-01.audiacloud.net ansible_user=admin ansible_ssh_pass=admin
+
+[nxos:children]
+nxos_cores
+
+[junos_access]
+DEV-JUNOS-01.audiacloud.net ansible_user=admin ansible_ssh_pass=junos01
+
+[junos:children]
+junos_access
+
+[switches:children]
+eos
+nxos
+junos
+
+[spines:children]
+eos_spines
+
+[cores:children]
+nxos_cores
+
+[eos:vars]
+ansible_connection=ansible.netcommon.network_cli
+ansible_network_os=arista.eos.eos
+
+[nxos:vars]
+ansible_connection=ansible.netcommon.network_cli
+ansible_network_os=cisco.nxos.nxos
+
+[junos:vars]
+ansible_connection=ansible.netcommon.netconf
+ansible_network_os=junipernetworks.junos.junos

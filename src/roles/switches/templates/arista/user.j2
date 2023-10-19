@@ -1,0 +1,14 @@
+! templates/ntp.j2
+#jinja2: trim_blocks: False
+#jinja2: lstrip_blocks: False
+
+{% if item.state == "present" %}
+
+username {{ item.name }} privilege {{ item.privilege }} role {{ item.role }} nopassword
+username {{ item.name }} ssh-key {{ item.ssh_key }}
+
+{% elif item.state == "removed" %}
+
+no username {{ item.name }}
+
+{% endif %}

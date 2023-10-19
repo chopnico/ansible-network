@@ -1,0 +1,18 @@
+---
+- name: get meraki organization networks
+  include_tasks: "../../common/tasks/meraki_organization_networks.yml"
+
+- name: get allowed list
+  include_vars: "../vars/allowed_urls.yml"
+- name: get blocked list
+  include_vars: "../vars/blocked_urls.yml"
+
+- name: apply url filter rules
+  delegate_to: localhost
+  meraki_content_filtering:
+    auth_key: "{{ meraki_api_key }}"
+    org_id: "{{ meraki_organization_id }}"
+    net_name: "{{ item['name'] }}"
+    allowed_urls: "{{ allowed_urls }}"
+    blocked_urls: "{{ blocked_urls }}"
+  with_items: "{{ meraki_organization_networks }}"

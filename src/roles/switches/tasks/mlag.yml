@@ -1,0 +1,44 @@
+---
+- name: get eos config
+  arista.eos.eos_command:
+    commands: 'show running-config all | exclude \.\*'
+  register: output
+  no_log: "{{ no_log | default(true) }}"
+  when: _eos_config is not defined
+
+- name: save eos config as fact
+  set_fact:
+    _eos_config: "{{ output.stdout[0] }}"
+  no_log: "{{ no_log | default(true) }}"
+  when: _eos_config is not defined
+
+- name: build vlan
+  arista.eos.eos_config:
+    src: arista/mlag_vlan.j2
+    defaults: yes
+    save_when: changed
+    config: "{{ _eos_config | default(omit) }}"
+  with_items: "{{ mlag }}"
+  when: mlag is defined
+
+- name: build interfaces
+  arista.eos.eos_config:
+    after:
+      - shutdown
+      - no shutdown
+    src: arista/mlag_interface.j2
+    defaults: yes
+    save_when: changed
+    config: "{{ _eos_config | default(omit) }}"
+  with_items: "{{ mlag }}"
+  when: mlag is defined
+
+- name: build mlag
+  arista.eos.eos_config:
+    src: arista/mlag.j2
+    defaults: yes
+    save_when: changed
+    config: "{{ _eos_config | default(omit) }}"
+  with_items: "{{ mlag }}"
+  when: mlag is defined
+...

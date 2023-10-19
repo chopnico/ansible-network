@@ -1,0 +1,9 @@
+---
+- hosts: meraki
+  gather_facts: no
+  collections:
+    - cisco.meraki
+  roles:
+    - name: meraki
+      tags: meraki
+...

@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+pip install -r requirements.txt
+
+ansible-galaxy collection install --force -r requirements.yml
+ansible-galaxy role install --force -r requirements.yml

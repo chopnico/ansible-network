@@ -1,0 +1,18 @@
+---
+- name: meraki - device
+  delegate_to: localhost
+  cisco.meraki.meraki_device:
+    auth_key: "{{ meraki_api_key }}"
+    org_id: "{{ meraki_organization_id }}"
+    net_name: "{{ inventory_hostname }}"
+    state: "{{ item.state }}"
+    serial: "{{ item.serial }}"
+    name: "{{ item.name }}"
+    address: "{{ physical_address }}"
+    tags: "{{ item.tags }}"
+    move_map_marker: "{{ item.move_marker | default('yes') }}"
+    use_proxy: "{{ use_proxy | default(omit)}}"
+    validate_certs: "{{ validate_certs | default(omit) }}"
+  with_items: "{{ devices }}"
+  when: devices is defined
+...

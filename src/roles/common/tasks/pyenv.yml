@@ -1,0 +1,19 @@
+---
+- name: pyenv
+  include_role:
+    name: avanov.pyenv
+    apply:
+      become: yes
+      become_method: sudo
+  vars:
+    pyenv_path: "/home/{{ user }}/.pyenv"
+    pyenv_owner: "{{ user }}"
+    pyenv_global: "{{ pyenv_python_version }}"
+    pyenv_update_git_install: no
+    pyenv_enable_autocompletion: yes
+    pyenv_python_versions:
+      - "{{ pyenv_python_version }}"
+    pyenv_virtualenvs: []
+  loop: "{{ pyenv_users }}"
+  loop_control:
+    loop_var: user

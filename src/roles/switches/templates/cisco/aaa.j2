@@ -1,0 +1,22 @@
+{% if item.state == "present" %}
+
+{% if radius_update_key == true %}
+radius-server key {{ radius_key }}
+{% endif %}
+
+radius-server host {{ item.radius_server }} auth-port {{ item.authorization_port }} acct-port {{ item.accounting_port }} authentication accounting
+
+aaa group server radius {{ item.radius_server_group }}
+   server {{ item.radius_server }}
+   use-vrf {{ item.vrf | default("default") }}
+aaa authentication login default group {{ item.radius_server_group }}
+aaa accounting default group {{ item.radius_server_group }}
+
+{% elif item.state == "absent" %}
+
+no aaa accounting default group {{ item.radius_server_group }}
+no aaa group server radius {{ item.radius_server_group }}
+no radius-server key {{ radius_key }}
+no radius-server host {{ item.radius_server }}
+
+{% endif %}

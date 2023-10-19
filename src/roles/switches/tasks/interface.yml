@@ -1,0 +1,30 @@
+---
+- name: eos - interface
+  block:
+    - name: eos facts
+      arista.eos.eos_facts:
+      register: eos_facts
+
+    - name: get eos config
+      arista.eos.eos_command:
+        commands: 'show running-config all | exclude \.\*'
+      register: output
+      no_log: "{{ no_log | default(true) }}"
+      when: _eos_config is not defined
+
+    - name: save eos config as fact
+      set_fact:
+        _eos_config: "{{ output.stdout[0] }}"
+      no_log: "{{ no_log | default(true) }}"
+      when: _eos_config is not defined
+      
+    - name: configure interfaces
+      arista.eos.eos_config:
+        src: arista/interface.j2
+        defaults: yes
+        save_when: changed
+        config: "{{ _eos_config | default(omit) }}"
+      with_items: "{{ interfaces }}"
+      when: interfaces is defined
+  when: ansible_network_os == 'arista.eos.eos'
+...

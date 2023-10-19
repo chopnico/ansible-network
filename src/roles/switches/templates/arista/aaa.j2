@@ -1,0 +1,22 @@
+! templates/aaa.j2
+#jinja2: trim_blocks: False
+#jinja2: lstrip_blocks: False
+
+{% if item.state == "present" %}
+
+aaa group server radius {{ item.radius_server_group }}
+   server {{ item.radius_server }} vrf {{ item.vrf | default("default") }} auth-port {{ item.authorization_port }} acct-port {{ item.accounting_port }}
+aaa authentication login default group {{ item.radius_server_group }} local
+aaa authorization exec default group {{ item.radius_server_group }} local
+aaa accounting exec default start-stop group {{ item.radius_server_group }}
+aaa accounting commands all default start-stop group {{ item.radius_server_group }}
+
+{% elif item.state == "removed" or item.state == "delete" %}
+
+no aaa group server radius {{ item.radius_server_group }}
+no aaa authentication login default group {{ item.radius_server_group }} local
+no aaa authorization exec default group {{ item.radius_server_group }} local
+no aaa accounting exec default start-stop group {{ item.radius_server_group }}
+no aaa accounting commands all default start-stop group {{ item.radius_server_group }}
+
+{% endif %}

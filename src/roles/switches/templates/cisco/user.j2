@@ -1,0 +1,6 @@
+{% if item.state == "present" %}
+
+username {{ item.name }} password 5 !  role {{ item.role }}
+username {{ item.name }} sshkey {{ item.ssh_key }}
+
+{% endif %}

@@ -1,0 +1,15 @@
+! templates/lldp.j2
+#jinja2: trim_blocks: False
+#jinja2: lstrip_blocks: False
+
+{% if lldp.state == "present" %}
+
+lldp management-address {{ lldp.interface }}
+lldp run
+
+{% elif lldp.state == "absent" %}
+
+no lldp management-address
+no lldp run
+
+{% endif %}

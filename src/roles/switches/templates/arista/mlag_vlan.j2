@@ -1,0 +1,11 @@
+! templates/vlan.j2
+#jinja2: trim_blocks: False
+#jinja2: lstrip_blocks: False
+
+{% if item.state == "enabled" %}
+
+vlan {{ item.vlan_id }}
+   name mlag_peer
+   trunk group mlagpeer
+
+{% endif %}

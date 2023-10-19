@@ -1,0 +1,45 @@
+---
+- name: junos - lldp
+  block:
+    - name: junos - configure lldp
+      junipernetworks.junos.junos_config:
+        update: "merge"
+        src: "junos/lldp.j2"
+        src_format: "set"
+      when: lldp is defined
+  when: ansible_network_os == 'junipernetworks.junos.junos'
+
+- name: eos - lldp
+  block:
+    - name: eos - get config
+      arista.eos.eos_command:
+        commands: 'show running-config all | exclude \.\*'
+      register: output
+      no_log: "{{ no_log | default(true) }}"
+      when: _eos_config is not defined
+
+    - name: eos - save config as fact
+      set_fact:
+        _eos_config: "{{ output.stdout[0] }}"
+      no_log: "{{ no_log | default(true) }}"
+      when: _eos_config is not defined
+
+    - name: eos - configure lldp
+      arista.eos.eos_config:
+        src: arista/lldp.j2
+        defaults: yes
+        save_when: changed
+        config: "{{ _eos_config | default(omit) }}"
+      when: lldp is defined
+  when: ansible_network_os == 'arista.eos.eos'
+
+- name: nxos - lldp
+  block:
+    - name: nxos - configure lldp
+      cisco.nxos.nxos_config:
+        src: cisco/lldp.j2
+        diff_against: running
+        save_when: changed
+      when: lldp is defined
+  when: ansible_network_os == 'cisco.nxos.nxos'
+...

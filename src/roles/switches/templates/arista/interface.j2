@@ -1,0 +1,63 @@
+! templates/interface.j2
+#jinja2: trim_blocks: False
+#jinja2: lstrip_blocks: False
+
+{% if item.state == "enabled" %}
+
+interface {{ item.name }}
+  
+  {% if item.description is defined %}
+   
+   description {{ item.description }}
+  
+  {% endif %}
+   
+   no shutdown
+
+  {% if item.mtu is defined %}
+
+   mtu {{ item.mtu }}
+
+  {% endif %}
+  {% if item.switchport == "no" %}
+   
+   no switchport
+      {% if item.vrf is defined %}
+   
+   vrf forwarding {{ item.vrf }}
+
+      {% endif %}
+
+   ip address {{ item.ip_address }}
+
+  {% else %}
+    {% if item.switchport == "trunk" %}
+
+   switchport mode trunk
+
+    {% elif item.switchport == "access" %}
+
+   switchport mode access
+   switchport access vlan {{ item.vlan }}
+
+    {% elif item.switchport == "vlan" %}
+      {% if item.vrf is defined %}
+   
+   vrf forwarding {{ item.vrf }}
+
+      {% endif %}
+
+   ip address {{ item.ip_address }}
+
+    {% if item.virtual_router_ip_address is defined %}
+
+   ip virtual-router address {{ item.virtual_router_ip_address  }}
+
+    {% endif %}
+    {% endif %}
+  {% endif %}
+{% elif item.state == "default" %}
+
+default interface {{ item.name }}
+
+{% endif %}

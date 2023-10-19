@@ -1,0 +1,32 @@
+! templates/interface.j2
+#jinja2: trim_blocks: False
+#jinja2: lstrip_blocks: False
+
+{% if item.state == "enabled" %}
+  {% for interface in item.interfaces %}
+    {% if interface.type == "vlan" %}
+
+interface {{ interface.name }}
+   description MLAG Peer
+   ip address {{ interface.ip_address }}
+  
+    {% elif interface.type == "peer" %}
+
+interface {{ interface.name }}
+   description MLAG Peer Link
+   switchport mode trunk
+   switchport trunk group mlagpeer
+
+      {% for int in interface.members %}
+
+interface {{ int.name }}
+   description MLAG Peer Link
+   mtu 9214
+   speed {{ int.speed | default("auto 40gfull") }}
+   switchport mode trunk
+   channel-group 1 mode active
+    
+      {% endfor %}
+    {% endif %}
+  {% endfor %}
+{% endif %}

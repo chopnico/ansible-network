@@ -1,0 +1,6 @@
+---
+- name: nxos save config
+  cisco.nxos.nxos_config:
+    save_when: modified
+  when: ansible_network_os == 'cisco.nxos.nxos'
+...

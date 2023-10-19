@@ -1,0 +1,20 @@
+---
+- name: meraki - vlans
+  delegate_to: localhost
+  meraki_vlan:
+    auth_key: "{{ meraki_api_key }}"
+    org_id: "{{ meraki_organization_id }}"
+    state: "{{ item.state }}"
+    net_id: "{{ network_id }}"
+    vlan_id: "{{ item.id }}"
+    name: "{{ item.name }}"
+    subnet: "{{ item.subnet }}"
+    appliance_ip: "{{ item.appliance_ip }}"
+    fixed_ip_assignments: "{{ item.fixed_ip_assignments | default(omit) }}"
+    reserved_ip_range: "{{ item.reserved_ip_range | default(omit) }}"
+    dns_nameservers: "{{ item.dns_nameservers | default((default_internal_dns) | join(';')) }}"
+    use_proxy: "{{ use_proxy | default(omit)}}"
+    validate_certs: "{{ validate_certs | default(omit) }}"
+  with_items: "{{ vlans }}"
+  when: vlans is defined
+...

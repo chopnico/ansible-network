@@ -1,0 +1,46 @@
+---
+- name: eos - snmp
+  block:
+    - name: get eos config
+      arista.eos.eos_command:
+        commands: 'show running-config all | exclude \.\*'
+      register: output
+      no_log: "{{ no_log | default(true) }}"
+      when: _eos_config is not defined
+
+    - name: save eos config as fact
+      set_fact:
+        _eos_config: "{{ output.stdout[0] }}"
+      no_log: "{{ no_log | default(true) }}"
+      when: _eos_config is not defined
+
+    - name: configure snmp
+      arista.eos.eos_config:
+        src: arista/snmp.j2
+        defaults: yes
+        save_when: changed
+        config: "{{ _eos_config | default(omit) }}"
+      with_items: "{{ snmp }}"
+      when: snmp is defined
+  when: ansible_network_os == 'arista.eos.eos'
+
+- name: nxos - snmp
+  block:
+    - name: configure snmp
+      cisco.nxos.nxos_snmp_community:
+        state: "{{ item.state }}"
+        community: "{{ item.community }}"
+        access: "{{ item.access | default('ro') }}"
+      with_items: "{{ snmp }}"
+      when: snmp is defined
+    - cisco.nxos.nxos_snmp_host:
+        state: "{{ item.state }}"
+        snmp_host: "{{ item.server }}"
+        community: "{{ item.community }}"
+        version: "{{ item.version | default('v2c') }}"
+        vrf: "{{ item.vrf | default(omit) }}"
+        udp: "{{ item.udp_port | default(omit) }}"
+      with_items: "{{ snmp }}"
+      when: snmp is defined
+  when: ansible_network_os == 'cisco.nxos.nxos' 
+...
